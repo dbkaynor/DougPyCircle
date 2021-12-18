@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "onvalue",
+        "pyautogui",
+        "pygame",
+        "verticle"
+    ],
+    "editor.fontSize": 12,
+    "editor.renderWhitespace": "all",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.defaultFormatter": "njpwerner.autodocstring",
+    "editor.suggest.showStatusBar": true
+}
