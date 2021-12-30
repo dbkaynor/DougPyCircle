@@ -1,0 +1,10 @@
+# This opens a webserver on port on http://127.0.0.1:8080/
+python3 -m http.server
+
+
+# Sample google map searchs
+https://www.google.com/maps/search/?api=1&query=ellensburg
+https://www.google.com/maps/search/?api=1&query=thorp+washington
+
+Search string for Google Maps
+https://www.google.com/maps/search/?api=1&query=TESTSEARCH
