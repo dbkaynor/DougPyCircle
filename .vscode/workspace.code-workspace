@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "..\\..\\DougPyCircle"
+		},
+		{
+			"path": "..\\..\\DougModules"
+		}
+	],
+	"settings": {
+		"editor.fontSize": 8
+	}
+}

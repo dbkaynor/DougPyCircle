@@ -1,15 +1,8 @@
-#  https://sites.cs.ucsb.edu/~pconrad/cs5nm/topics/pygame/drawing/
-#  http://cs.roanoke.edu/Fall2013/CPSC120A/pygame-1.9.1-docs-html/ref/examples.html
-# https://www.geeksforgeeks.org/creating-start-menu-in-pygame/
-# https://www.pygame.org/docs/ref/draw.html
-# event:  <Event(1024-MouseMotion {'pos': (91, 491), 'rel': (-12, -23), 'buttons': (0, 0, 0), 'touch': False, 'window': None})>
-# vscode-fold=#
 import math
 import os
 import platform
 import random
 import sys
-import time
 import tkinter
 from tkinter import messagebox
 from tkinter.colorchooser import askcolor
@@ -23,19 +16,15 @@ if platform.system() == "Windows":
     os.environ["SDL_VIDEODRIVER"] = "windib"
 import pprint
 
+debugMode = True
 pp = pprint.PrettyPrinter(indent=4)
-# import cv2
-# import pygame.display as display
-# import time
 colorList = []
 currentBackgroundColor = "black"
-screen = ""
-screenWidth = 0
-screenHeight = 0
 monitorWidth = 0
 monitorHeight = 0
+
 if platform.system() == "Windows":
-    screenPosVertical = -750
+    screenPosVertical = -900
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
     screenPosVertical = 0
@@ -49,12 +38,17 @@ root = 0
 
 pygame.init()
 pygame.display.init()
-
+# https://www.pygame.org/docs/ref/event.html
+for event in pygame.event.get():
+    if event.type == pygame.WINDOWRESIZED:
+        print('resize')
+'''
 gettrace = getattr(sys, "gettrace", None)
+print(gettrace)
 if gettrace is None:
     print("No sys.gettrace")
     debugMode = True
-elif gettrace():
+elif gettrace:
     print("Hmm, Big Debugger is watching me")
     debugMode = True
 else:
@@ -62,9 +56,9 @@ else:
     debugMode = False
     if debugMode:
         print(" __name__", __name__)
+'''
 
-
-class game:
+class circles:
     root = tkinter.Tk()
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
     drawThePointsCheckButtonVar = tkinter.BooleanVar()
@@ -72,6 +66,8 @@ class game:
     drawCircleConnectorsCheckButtonVar = tkinter.BooleanVar()
     foregroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     backgroundColorRandomCheckButtonVar = tkinter.BooleanVar()
+    twistedLinesCheckButtonVar = tkinter.BooleanVar()
+    shiftedLinesCheckButtonVar = tkinter.BooleanVar()
     numberOfCirclesVar = tkinter.IntVar()
     degreesBetweenPointsVar = tkinter.IntVar()
     minimumCircleRadiusVar = tkinter.IntVar()
@@ -80,12 +76,9 @@ class game:
     lineThicknessVar = tkinter.IntVar()
     repeatCountVar = tkinter.IntVar()
     menuWidth = 220
-    menuHeight = 730
+    menuHeight = 800
 
     def main():
-        global screen
-        global screenWidth
-        global screenHeight
         global monitorWidth
         global monitorHeight
         global root
@@ -95,44 +88,34 @@ class game:
         global debugMode
 
         pygame.event.pump()
-        event = pygame.event.wait()
-        print('event: ', str(event))
+        # event = pygame.event.wait()
+        # print('event: ', str(event))
 
         geometry = "".join(
             [
-                str(game.menuWidth),
+                str(circles.menuWidth),
                 "x",
-                str(game.menuHeight),
+                str(circles.menuHeight),
                 "+",
-                str(screenPosHorizontal - game.menuWidth - 10),
+                str(screenPosHorizontal - circles.menuWidth - 10),
                 "+",
-                str(screenPosVertical - 40),
+                str(screenPosVertical - 80),
             ]
         )
 
-        game.root.geometry(geometry)
-        game.root.resizable(height=False, width=False)
-        game.root.title("Draw some circles")
+        circles.root.geometry(geometry)
+        circles.root.resizable(height=False, width=False)
+        circles.root.title("Draw some circles")
         main_dialog = tkinter.Frame(root)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
         photo = tkinter.PhotoImage(
             file="".join([os.path.dirname(__file__), os.sep, "KickUnderBus.png"])
         )
-        game.root.iconphoto(True, photo)
+        circles.root.iconphoto(True, photo)
 
-        game.setUp()
-        # #######################################
-        quitButton = tkinter.Button(
-            root,
-            text="Quit",
-            fg="blue",
-            bg="white",
-            width=20,
-            command=game.quitProgram
-        )
-        quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
-        ToolTip(quitButton, text="Quit the program")
+        circles.setUp()
+
         # #######################################
         drawCirclesButton = tkinter.Button(
             root,
@@ -140,7 +123,7 @@ class game:
             fg="blue",
             bg="white",
             width=20,
-            command=game.drawTheCircles,
+            command=circles.drawTheCircles,
         )
         drawCirclesButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(drawCirclesButton, text="Draw some circles")
@@ -151,7 +134,7 @@ class game:
             fg="blue",
             bg="white",
             width=20,
-            command=game.clearDisplay,
+            command=circles.clearDisplay,
         )
         clearCirclesButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(clearCirclesButton, text="Clear the display")
@@ -162,7 +145,7 @@ class game:
             fg="blue",
             bg="white",
             width=20,
-            command=game.selectBackgroundColor,
+            command=circles.selectBackgroundColor,
         )
         selectScreenFillButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(selectScreenFillButton, text="Select background color")
@@ -173,7 +156,7 @@ class game:
             fg="blue",
             bg="white",
             width=20,
-            command=game.randomBackgroundColor,
+            command=circles.randomBackgroundColor,
         )
         randomScreenFillButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(randomScreenFillButton, text="Random  background color")
@@ -184,7 +167,7 @@ class game:
             fg="blue",
             bg="white",
             width=20,
-            command=game.selectforegroundColor,
+            command=circles.selectforegroundColor,
         )
         selectforegroundColorButton.pack(
             side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X
@@ -208,10 +191,10 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Clear before draw"),
-            variable=game.clearBeforeDrawCheckButtonVar
+            variable=circles.clearBeforeDrawCheckButtonVar
         )
         clearBeforeDrawCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
-        game.clearBeforeDrawCheckButtonVar.set(True)
+        circles.clearBeforeDrawCheckButtonVar.set(True)
 
         drawPointsCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -221,12 +204,12 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Draw points"),
-            variable=game.drawThePointsCheckButtonVar,
+            variable=circles.drawThePointsCheckButtonVar,
         )
         drawPointsCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
 
         ToolTip(drawPointsCheckButton, "Draw the circle points")
-        game.drawThePointsCheckButtonVar.set(True)
+        circles.drawThePointsCheckButtonVar.set(True)
         # #######################################
         drawPointConnectorsCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -236,12 +219,12 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Draw point connectors"),
-            variable=game.drawPointConnectorsCheckButtonVar,
+            variable=circles.drawPointConnectorsCheckButtonVar,
         )
         drawPointConnectorsCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
 
         ToolTip(drawPointConnectorsCheckButton, "Draw connectors between points")
-        game.drawPointConnectorsCheckButtonVar.set(True)
+        circles.drawPointConnectorsCheckButtonVar.set(True)
         # #######################################
         drawCircleConnectorsCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -251,13 +234,13 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Draw circle connector lines"),
-            variable=game.drawCircleConnectorsCheckButtonVar,
+            variable=circles.drawCircleConnectorsCheckButtonVar,
         )
         # trunk-ignore(flake8/E501)
         drawCircleConnectorsCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
 
         ToolTip(drawCircleConnectorsCheckButton, text="Draw lines between circles")
-        game.drawCircleConnectorsCheckButtonVar.set(True)
+        circles.drawCircleConnectorsCheckButtonVar.set(True)
         # #######################################
         foregroundColorRandomCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -267,12 +250,12 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Random foreground color"),
-            variable=game.foregroundColorRandomCheckButtonVar,
+            variable=circles.foregroundColorRandomCheckButtonVar,
         )
         foregroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
 
         ToolTip(foregroundColorRandomCheckButton, text="Random foreground color")
-        game.foregroundColorRandomCheckButtonVar.set(True)
+        circles.foregroundColorRandomCheckButtonVar.set(True)
         # #######################################
         backgroundColorRandomCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -282,12 +265,42 @@ class game:
             onvalue=True,
             offvalue=False,
             command=lambda: print("Random background color"),
-            variable=game.backgroundColorRandomCheckButtonVar,
+            variable=circles.backgroundColorRandomCheckButtonVar,
         )
         backgroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
 
         ToolTip(backgroundColorRandomCheckButton, text="Random background color")
-        game.backgroundColorRandomCheckButtonVar.set(False)
+        circles.backgroundColorRandomCheckButtonVar.set(False)
+        # #######################################
+        twistedCheckButton = tkinter.Checkbutton(
+            checkButtonFrame,
+            text="Twisted lines",
+            fg="blue",
+            bg="white",
+            onvalue=True,
+            offvalue=False,
+            command=lambda: print("Twisted lines"),
+            variable=circles.twistedLinesCheckButtonVar,
+        )
+        twistedCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
+
+        ToolTip(twistedCheckButton, text="Twisted lines")
+        circles.twistedLinesCheckButtonVar.set(False)
+        # #######################################
+        shiftedLinesCheckButton = tkinter.Checkbutton(
+            checkButtonFrame,
+            text="Shifted lines",
+            fg="blue",
+            bg="white",
+            onvalue=True,
+            offvalue=False,
+            command=lambda: print("Shifted lines"),
+            variable=circles.shiftedLinesCheckButtonVar,
+        )
+        shiftedLinesCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
+
+        ToolTip(shiftedLinesCheckButton, text="Shiftedlines")
+        circles.shiftedLinesCheckButtonVar.set(False)
         # #######################################
         numberOfCircles = tkinter.Scale(
             root,
@@ -298,13 +311,13 @@ class game:
             length=150,
             from_=2,
             to=20,
-            variable=game.numberOfCirclesVar,
+            variable=circles.numberOfCirclesVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         numberOfCircles.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(numberOfCircles, "Select number of circles to draw.")
-        game.numberOfCirclesVar.set(2)
+        circles.numberOfCirclesVar.set(2)
 
         # #######################################
         degreesBetweenPoints = tkinter.Scale(
@@ -317,14 +330,14 @@ class game:
             from_=2,
             to=180,
             resolution=2,
-            variable=game.degreesBetweenPointsVar,
+            variable=circles.degreesBetweenPointsVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         degreesBetweenPoints.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(degreesBetweenPoints, "Select degrees between points.")
-        game.degreesBetweenPointsVar.set(10)
+        circles.degreesBetweenPointsVar.set(10)
         # #######################################
         minimumCircleRadius = tkinter.Scale(
             root,
@@ -334,14 +347,14 @@ class game:
             length=150,
             from_=2,
             to=200,
-            variable=game.minimumCircleRadiusVar,
+            variable=circles.minimumCircleRadiusVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         minimumCircleRadius.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(minimumCircleRadius, "Select minimum circle radius.")
-        game.minimumCircleRadiusVar.set(10)
+        circles.minimumCircleRadiusVar.set(10)
         # #######################################
         maximumCircleRadius = tkinter.Scale(
             root,
@@ -351,14 +364,14 @@ class game:
             length=150,
             from_=3,
             to=201,
-            variable=game.maximumCircleRadiusVar,
+            variable=circles.maximumCircleRadiusVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         maximumCircleRadius.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(maximumCircleRadius, "Select maximum circle radius.")
-        game.maximumCircleRadiusVar.set(200)
+        circles.maximumCircleRadiusVar.set(200)
         # #######################################
         pointRadius = tkinter.Scale(
             root,
@@ -368,14 +381,14 @@ class game:
             length=150,
             from_=1,
             to=20,
-            variable=game.pointRadiusVar,
+            variable=circles.pointRadiusVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         pointRadius.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(pointRadius, "Select circle radius.")
-        game.pointRadiusVar.set(2)
+        circles.pointRadiusVar.set(2)
         # #######################################
         lineThickness = tkinter.Scale(
             root,
@@ -385,14 +398,14 @@ class game:
             length=150,
             from_=1,
             to=20,
-            variable=game.lineThicknessVar,
+            variable=circles.lineThicknessVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         lineThickness.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(lineThickness, "Select line thickness.")
-        game.lineThicknessVar.set(2)
+        circles.lineThicknessVar.set(2)
         # #######################################
         repeatCount = tkinter.Scale(
             root,
@@ -402,14 +415,26 @@ class game:
             length=150,
             from_=1,
             to=20,
-            variable=game.repeatCountVar,
+            variable=circles.repeatCountVar,
             orient=tkinter.HORIZONTAL,
             relief=tkinter.RAISED,
         )
         repeatCount.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
 
         ToolTip(repeatCount, "Select repeat count.")
-        game.repeatCountVar.set(1)
+        circles.repeatCountVar.set(1)
+
+         # #######################################
+        quitButton = tkinter.Button(
+            root,
+            text="Quit",
+            fg="blue",
+            bg="white",
+            width=20,
+            command=circles.quitProgram
+        )
+        quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
+        ToolTip(quitButton, text="Quit the program")
         # #######################################
 
         tkinter.mainloop()
@@ -427,8 +452,7 @@ class game:
         global debugMode
         global colorList
         global screen
-        global screenWidth
-        global screenHeight
+
         global menuHeight
 
         global monitorWidth
@@ -444,7 +468,7 @@ class game:
             screenPosVertical,
         )
         screenWidth = 800
-        screenHeight = game.menuHeight  # 550
+        screenHeight = circles.menuHeight  # 550
 
         screen = pygame.display.set_mode((screenWidth, screenHeight), pygame.RESIZABLE)
         pygame.display.set_caption("Draw some circles", "CIRCLES")
@@ -482,8 +506,8 @@ class game:
                 print("getCircleRadius")
             try:
                 circleRadius = random.randint(
-                    game.minimumCircleRadiusVar.get(),
-                    game.maximumCircleRadiusVar.get())
+                    circles.minimumCircleRadiusVar.get(),
+                    circles.maximumCircleRadiusVar.get())
                 return circleRadius
 
             except Exception as e:
@@ -506,7 +530,7 @@ class game:
             step = 0
             pointsList = []
             while step < 2 * math.pi:  # about 6.28
-                step += 0.01745329 * game.degreesBetweenPointsVar.get()
+                step += 0.01745329 * circles.degreesBetweenPointsVar.get()
                 x = circleRadius * math.cos(step) + horizontalPosition
                 y = circleRadius * math.sin(step) + verticalPosition
                 point = [round(x, 2), round(y, 2)]
@@ -517,12 +541,10 @@ class game:
             return pointsList
 
         # Generates the required number of circles
-        counter = game.numberOfCirclesVar.get()
+        counter = circles.numberOfCirclesVar.get()
         while counter > 0:
             counter -= 1
             circleRadius = getCircleRadius()
-            # horizontalPosition = random.randrange(circleRadius, screenWidth - circleRadius)
-            # verticalPosition = random.randrange(circleRadius, screenHeight - circleRadius)
 
             screenWidth, screenHeight = screen.get_size()
             horizontalPosition = random.randrange(circleRadius, screenWidth - circleRadius)
@@ -541,32 +563,33 @@ class game:
         if debugMode:
             print("drawTheCircles")
 
-        game.screenWidth, game.screenHeight = screen.get_size()
+        circles.screenWidth, circles.screenHeight = screen.get_size()
 
-        for x in range(game.repeatCountVar.get()):
+        for x in range(circles.repeatCountVar.get()):
             pygame.event.pump()
             event = pygame.event.wait()
             print('event: ', str(event))
-            allPointsList = game.getAllOfTheArrays()
+            allPointsList = circles.getAllOfTheArrays()
             if allPointsList[0] == -1:  # An error occurred so abort
                 messagebox.showerror(
                     "Error",
-                    "An error with game.getAllOfTheArrays\n"
+                    "An error with circles.getAllOfTheArrays\n"
                 )
                 return
-            if game.clearBeforeDrawCheckButtonVar.get():
-                game.clearDisplay()
-            if game.backgroundColorRandomCheckButtonVar.get():
-                game.randomBackgroundColor()
-            if game.drawThePointsCheckButtonVar.get():
-                game.drawThePoints()
-            if game.drawPointConnectorsCheckButtonVar.get():
-                game.drawPointConnectors()
-            if game.drawCircleConnectorsCheckButtonVar.get():
-                game.drawCircleConnectors()
+            if circles.clearBeforeDrawCheckButtonVar.get():
+                circles.clearDisplay()
+            if circles.backgroundColorRandomCheckButtonVar.get():
+                circles.randomBackgroundColor()
+            if circles.drawThePointsCheckButtonVar.get():
+                circles.drawThePoints()
+            if circles.drawPointConnectorsCheckButtonVar.get():
+                circles.drawPointConnectors()
+            if circles.drawCircleConnectorsCheckButtonVar.get():
+                circles.drawCircleConnectors()
             pygame.display.flip()
-            if game.repeatCountVar.get() != 1:
-                time.sleep(3)
+            if circles.repeatCountVar.get() != 1:
+                pygame.time.wait(1000*3)
+                # time.sleep(3)
 
     # Draw the points
     def drawThePoints():
@@ -575,7 +598,7 @@ class game:
             print("drawThePoints")
         for circlePointsList in allPointsList:
             for aPoint in circlePointsList:
-                if game.foregroundColorRandomCheckButtonVar.get():
+                if circles.foregroundColorRandomCheckButtonVar.get():
                     currentForegroundColor = colorList[
                         random.randrange(0, len(colorList))
                     ]
@@ -585,8 +608,8 @@ class game:
                     screen,
                     currentForegroundColor,
                     (aPoint[0], aPoint[1]),
-                    game.pointRadiusVar.get(),
-                    game.lineThicknessVar.get(),
+                    circles.pointRadiusVar.get(),
+                    circles.lineThicknessVar.get(),
                 )
 
     def drawPointConnectors():
@@ -594,22 +617,17 @@ class game:
             print("drawPointConnectors")
             pp.pprint(allPointsList)
         for circlePointsList in allPointsList:
-            if game.foregroundColorRandomCheckButtonVar.get():
+            if circles.foregroundColorRandomCheckButtonVar.get():
                 currentForegroundColor = colorList[random.randrange(0, len(colorList))]
             else:
                 currentForegroundColor = foregroundColor
 
             for p1, p2 in zip(circlePointsList, circlePointsList[1:]):
                 pygame.draw.line(
-                    screen, currentForegroundColor, p1, p2, game.lineThicknessVar.get()
+                    screen, currentForegroundColor, p1, p2, circles.lineThicknessVar.get()
                 )
 
     # Draw connectors between points on the circumference of a circle
-    # Best way to shift a list in Python?
-    # https://stackoverflow.com/questions/44501591/best-way-to-shift-a-list-in-python
-    # Python Random shuffle() Method
-    # https://www.w3schools.com/python/ref_random_shuffle.asp
-    # Connect points of two circles
     def drawCircleConnectors():
         if debugMode:
             print("drawCircleConnectors")
@@ -618,27 +636,32 @@ class game:
         # The first while loop is for all of the circles
         i = 0
         while i < len(allPointsList) - 1:
+            if circles.twistedLinesCheckButtonVar.get():
+                random.shuffle(allPointsList[i])
+            if circles.shiftedLinesCheckButtonVar.get():
+                count = random.randint(0, len(allPointsList[i]) - 1)
+                print(count, len(allPointsList[i]))
+                while count > 0:
+                    count -= 1
+                    allPointsList[i].append(allPointsList[i].pop(0))
+
             p1 = allPointsList[i]
-            pp.pprint(p1)
+            # pp.pprint(p1)
             i += 1
             p2 = allPointsList[i]
-            pp.pprint(p2)
+            # pp.pprint(p2)
 
             j = 0
             # This while loop is for the points in a circle
             while j < len(p1):
-                pp.pprint(p1[j])
-                pp.pprint(p2[j])
                 for circlePointsList in allPointsList:
-                    if game.foregroundColorRandomCheckButtonVar.get():
+                    if circles.foregroundColorRandomCheckButtonVar.get():
                         currentForegroundColor = colorList[random.randrange(0, len(colorList))]
                     else:
                         currentForegroundColor = foregroundColor
-
-                # random.shuffle(l1)
-                # for enum_days in enumerate(days):
                 pygame.draw.line(screen, currentForegroundColor,
-                                 p1[j], p2[j], game.lineThicknessVar.get())
+
+                                 p1[j], p2[j], circles.lineThicknessVar.get())
                 j += 1
 
     def clearDisplay():
@@ -700,8 +723,6 @@ class game:
             print("randomBackgroundColor: ", color, currentBackgroundColor)
 
     # This is where we loop until user wants to exit
-    # Fills screen with a random color
-
 
 if __name__ == "__main__":
-    game.main()
+    circles.main()
