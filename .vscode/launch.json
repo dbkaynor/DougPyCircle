@@ -5,13 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "perl",
+            "request": "launch",
+            "name": "Perl-Debug",
+            "program": "/",
+            "stopOnEntry": true,
+            "reloadModules": true
+        },
+
+        {
             "name": "Python C++ Debugger",
             "type": "pythoncpp",
             "request": "launch",
             "pythonConfig": "default",
-            "cppConfig": "!!pick 'default (win) Attach' or 'default (gdb) Attach'"
+            "cppConfig": "default (win) Attach"
         },
-
         {
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}"
@@ -29,8 +37,9 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "//home/douglas//DougPython//DougPyCircle/",
-            "console": "integratedTerminal"
+            "cwd": "C:\\Users\\dbkaynox\\DougPython\\DougPyCircle\\",
+            "internalConsoleOptions": "openOnSessionStart",
+            "redirectOutput": true
         }
     ]
 }

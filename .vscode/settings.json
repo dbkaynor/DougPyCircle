@@ -1,11 +1,15 @@
 {
     "cSpell.words": [
+        "blit",
+        "continuously",
+        "gorx",
+        "Initializing",
         "onvalue",
         "pyautogui",
         "pygame",
-        "verticle"
+        "vertical"
     ],
-    "editor.fontSize": 12,
+    "editor.fontSize": 8,
     "editor.renderWhitespace": "all",
     "editor.bracketPairColorization.enabled": true,
     "editor.defaultFormatter": "njpwerner.autodocstring",
