@@ -38,7 +38,7 @@ if platform.system() == "Windows":
 
 # This positioning is for testing purposes
 if platform.system() == "Windows":
-    screenPosVertical = -900
+    screenPosVertical = -1100
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
     screenPosVertical = 0
@@ -85,7 +85,7 @@ class circles:
     repeatCountVar = tkinter.IntVar()
     repeatDelayVar = tkinter.IntVar()
     menuWidth = 220
-    menuHeight = 900
+    menuHeight = 870
     colorList = []
     foregroundColor = "white"
     backgroundColor = "black"
@@ -115,7 +115,7 @@ class circles:
                 "+",
                 str(screenPosHorizontal - circles.menuWidth - 10),
                 "+",
-                str(screenPosVertical - 80),
+                str(screenPosVertical),
             ]
         )
 
@@ -470,8 +470,8 @@ class circles:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
-
-        tkinter.mainloop()
+        circles.tkRoot.after(1000, circles.clearDisplay)
+        circles.tkRoot.mainloop()
 
     def quitProgram():
         if debugMode:
@@ -498,9 +498,9 @@ class circles:
             screenPosVertical
         )
         screenWidth = 800
-        screenHeight = circles.menuHeight  # 550
+        screenHeight = circles.menuHeight + 50 # 550
 
-        screen = pygame.display.set_mode((screenWidth, screenHeight), pygame.RESIZABLE)
+        screen = pygame.display.set_mode((screenWidth, screenHeight), pygame.NOFRAME)
         pygame.display.set_caption("Draw some circles", "CIRCLES")
         pygame.event.pump()
 
