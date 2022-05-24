@@ -29,9 +29,28 @@ import pygame
 from screeninfo import get_monitors
 
 from ToolTip import ToolTip
-
+import inspect
 import pprint
+
+# Clear the terminal at program startup
+os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
+
+debugFile = "DougPyCircles.txt"
+if os.path.exists(debugFile):
+    os.remove(debugFile)
+
+
+def line_info(message="nothing", show=False):
+    f = inspect.currentframe()
+    i = inspect.getframeinfo(f.f_back)
+    tString = f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}\n"
+    file1 = open(debugFile, "a")
+    file1.write(tString)
+    file1.close()
+    if show:
+        print(tString)
+
 
 if platform.system() == "Windows":
     os.environ["SDL_VIDEODRIVER"] = "windib"
@@ -498,7 +517,7 @@ class circles:
             screenPosVertical
         )
         screenWidth = 800
-        screenHeight = circles.menuHeight + 50 # 550
+        screenHeight = circles.menuHeight + 50  # 550
 
         screen = pygame.display.set_mode((screenWidth, screenHeight), pygame.NOFRAME)
         pygame.display.set_caption("Draw some circles", "CIRCLES")
