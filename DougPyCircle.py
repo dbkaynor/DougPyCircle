@@ -56,7 +56,7 @@ if platform.system() == "Windows":
     os.environ["SDL_VIDEODRIVER"] = "windib"
 
 # This positioning is for testing purposes
-if platform.system() == "Windows":
+if os.getenv("COMPUTERNAME") == 'DBKAYNOX-MOBL4':
     screenPosVertical = -1100
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
@@ -66,8 +66,13 @@ elif platform.system() == "OS X":
     screenPosVertical = 0
     screenPosHorizontal = 0
 else:
-    print("Unknown platform: " + platform.system())
+    line_info(' '.join(["Unknown platform:", platform.system()]))
     exit()
+
+screen = 0
+tkRoot = 0
+pygame.init()
+pygame.display.init()
 
 debugMode = True
 gettrace = getattr(sys, "gettrace", None)
@@ -85,7 +90,29 @@ else:
         print(" __name__", __name__)
 
 
+def about():
+    messagebox.showinfo('About TkCircle',
+                        os.linesep.join([' '.join(['Start directory: ',
+                                                   os.getcwd()]),
+                                         ' '.join(['Script name:',
+                                                   os.path.basename(__file__)]),
+                                         ' '.join(['Version:',
+                                                   str(os.path.getmtime(__file__))]),
+                                         ' '.join(['Geometry:',
+                                                   tkRoot.geometry()]),
+                                         ' '.join(['Screen size:',
+                                                   str(tkRoot.winfo_screenwidth()),
+                                                   'x',
+                                                   str(tkRoot.winfo_screenheight())]),
+                                         ' '.join(['Python version:',
+                                                   platform.python_version()]),
+                                         ' '.join(['Platform:',
+                                                   platform.platform()])
+                                         ]))
+
+
 class circles:
+    global tkRoot
     tkRoot = tkinter.Tk()
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
     drawThePointsCheckButtonVar = tkinter.BooleanVar()
@@ -104,13 +131,11 @@ class circles:
     repeatCountVar = tkinter.IntVar()
     repeatDelayVar = tkinter.IntVar()
     menuWidth = 220
-    menuHeight = 870
+    menuHeight = 900
     colorList = []
     foregroundColor = "white"
     backgroundColor = "black"
 
-    pygame.init()
-    pygame.display.init()
     # https://www.pygame.org/docs/ref/event.html
     for event in pygame.event.get():
         if event.type == pygame.WINDOWRESIZED:
@@ -138,22 +163,22 @@ class circles:
             ]
         )
 
-        circles.tkRoot.geometry(geometry)
-        circles.tkRoot.resizable(height=False, width=False)
-        circles.tkRoot.title("Draw some circles")
-        main_dialog = tkinter.Frame(circles.tkRoot)
+        tkRoot.geometry(geometry)
+        tkRoot.resizable(height=False, width=False)
+        tkRoot.title("Draw some circles")
+        main_dialog = tkinter.Frame(tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
         photo = tkinter.PhotoImage(
             file="".join([os.path.dirname(__file__), os.sep, "KickUnderBus.png"])
         )
-        circles.tkRoot.iconphoto(True, photo)
+        tkRoot.iconphoto(True, photo)
 
         circles.setUp()
 
         # #######################################
         drawCirclesButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Draw",
             fg="blue",
             bg="white",
@@ -164,7 +189,7 @@ class circles:
         ToolTip(drawCirclesButton, text="Draw some circles")
         # #######################################
         clearCirclesButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Clear",
             fg="blue",
             bg="white",
@@ -175,7 +200,7 @@ class circles:
         ToolTip(clearCirclesButton, text="Clear the display")
         # #######################################
         selectScreenFillButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Select background color",
             fg="blue",
             bg="white",
@@ -186,7 +211,7 @@ class circles:
         ToolTip(selectScreenFillButton, text="Select background color")
         # #######################################
         randomScreenFillButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Random background color",
             fg="blue",
             bg="white",
@@ -197,7 +222,7 @@ class circles:
         ToolTip(randomScreenFillButton, text="Random  background color")
         # #######################################
         selectforegroundColorButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Select foreground color",
             fg="blue",
             bg="white",
@@ -210,7 +235,7 @@ class circles:
         ToolTip(selectforegroundColorButton, text="Select foreground color")
         # #######################################
         checkButtonFrame = tkinter.Frame(
-            circles.tkRoot,
+            tkRoot,
             bg="white",
             width=20,
             highlightbackground="black",
@@ -323,7 +348,7 @@ class circles:
         circles.twistedLinesCheckButtonVar.set(False)
         # #######################################
         shiftedLines = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             highlightcolor="red",
@@ -340,7 +365,7 @@ class circles:
         circles.shiftedLinesVar.set(0)
         # #######################################
         numberOfCircles = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             highlightcolor="red",
@@ -358,7 +383,7 @@ class circles:
 
         # #######################################
         degreesBetweenPoints = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             highlightcolor="red",
@@ -377,7 +402,7 @@ class circles:
         circles.degreesBetweenPointsVar.set(10)
         # #######################################
         minimumCircleRadius = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Minimum circle radius",
@@ -394,7 +419,7 @@ class circles:
         circles.minimumCircleRadiusVar.set(10)
         # #######################################
         maximumCircleRadius = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Maximum circle radius",
@@ -411,7 +436,7 @@ class circles:
         circles.maximumCircleRadiusVar.set(200)
         # #######################################
         pointRadius = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Point radius",
@@ -428,7 +453,7 @@ class circles:
         circles.pointRadiusVar.set(2)
         # #######################################
         lineThickness = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Line thickness",
@@ -445,7 +470,7 @@ class circles:
         circles.lineThicknessVar.set(2)
         # #######################################
         repeatCount = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Repeat count",
@@ -462,7 +487,7 @@ class circles:
         circles.repeatCountVar.set(1)
         # #######################################
         repeatDelay = tkinter.Scale(
-            circles.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Repeat delay",
@@ -479,7 +504,7 @@ class circles:
         circles.repeatDelayVar.set(3)
         # #######################################
         quitButton = tkinter.Button(
-            circles.tkRoot,
+            tkRoot,
             text="Quit",
             fg="blue",
             bg="white",
@@ -489,8 +514,20 @@ class circles:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
-        circles.tkRoot.after(1000, circles.clearDisplay)
-        circles.tkRoot.mainloop()
+        aboutButton = tkinter.Button(
+            tkRoot,
+            text="About",
+            fg="blue",
+            bg="white",
+            width=20,
+            command=about
+        )
+        aboutButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
+        ToolTip(aboutButton, text="About the program")
+
+        # #######################################
+        tkRoot.after(1000, circles.clearDisplay)
+        tkRoot.mainloop()
 
     def quitProgram():
         if debugMode:
@@ -505,7 +542,6 @@ class circles:
         global debugMode
         # circles.colorList
         global screen
-
         global menuHeight
 
         debugFile = "DougPyCircle.txt"
