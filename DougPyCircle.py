@@ -641,6 +641,22 @@ class circles:
     # end of def getAllOfTheArrays()
     # #######################################
 
+    def drawScreenText(infoString, virtualScreenWidth, virtualScreenHeight):
+        infoFont = pygame.font.SysFont('Verdana', 20)
+
+        fontColor = 'pink'
+        infoText = infoFont.render(infoString, True, fontColor)
+        fgText = infoFont.render(circles.foregroundColor, True, fontColor)
+        bgText = infoFont.render(circles.backgroundColor, True, fontColor)
+        size = ' '.join([str(virtualScreenWidth), str(virtualScreenHeight)])
+        sizeText = infoFont.render(size, True, fontColor)
+
+        screen.blit(infoText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 10))
+        screen.blit(bgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 35))
+        screen.blit(fgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 60))
+        screen.blit(sizeText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 85))
+        pygame.display.flip
+
     def drawTheCircles():
         global debugMode
         global allPointsList
@@ -648,6 +664,7 @@ class circles:
             print("drawTheCircles")
 
         circles.screenWidth, circles.screenHeight = screen.get_size()
+
 
         for x in range(circles.repeatCountVar.get()):
             pygame.event.pump()
@@ -662,6 +679,9 @@ class circles:
                 return
             if circles.clearBeforeDrawCheckButtonVar.get():
                 circles.clearDisplay()
+            circles.drawScreenText('Circles',
+                                    circles.screenWidth,
+                                    circles.screenHeight)
             if circles.backgroundColorRandomCheckButtonVar.get():
                 circles.randomBackgroundColor()
             if circles.drawThePointsCheckButtonVar.get():
