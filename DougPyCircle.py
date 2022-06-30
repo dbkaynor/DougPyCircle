@@ -37,8 +37,8 @@ os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
 
 StartUpDirectory = os.path.split(sys.argv[0])[0]
+os.chdir(StartUpDirectory)
 # HelpFileVar.set(os.path.join(StartUpDirectoryVar.get(), 'DougPyCircles.hlp'))
-
 debugFile = os.path.join(StartUpDirectory, "DougPyCircles.txt")
 if os.path.exists(debugFile):
     os.remove(debugFile)
